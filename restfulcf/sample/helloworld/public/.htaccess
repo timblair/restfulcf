@@ -1,0 +1,14 @@
+##
+# This Apache rewrite file is to remove the need for everything to explicitly
+# run through rest.cfm for much cleaner URLs.  Instead of:
+#
+#     http://localhost/rest.cfm/resource.xml
+#
+# this rewrite allows us to drop the "rest.cfm" part as follows:
+#
+#     http://localhost/resource.xml
+#
+
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ([a-z]{1}.*)?$ rest.cfm/$1 [QSA,L]
