@@ -15,7 +15,6 @@ In no particular order...
     * Needs to be extracted from existing WLD implementation and refined
     * Unit tests required
     * Error capturing examples
-* Addition of `_method` parameter to support `PUT`/`DELETE` via `POST`
 * Remove dependancy on `CGI['PATH_INFO']` and SES enabling via `web.xml`
 * Support for deserialising JSON-encoded body content on `POST`/`PUT`
 

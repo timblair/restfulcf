@@ -21,6 +21,8 @@ REST interfaces require a constrained set of well-defined operators; in this cas
 
 For a more detailed discussion, see the [Wikipedia REST page](http://en.wikipedia.org/wiki/REST).
 
+> If the system consuming your RESTful application does not support `PUT` and `DELETE` requests, these can be simulated by using the special `_method` parameter via a `POST`.  The arguments should be provided as either a `POST` parameter or in the query string (if both are provided then the `POST` variable takes precedence); pass `_method=PUT` or `_method=DELETE` as appropriate.
+
 ## Requirements
 
 * ColdFusion 8
@@ -41,7 +43,7 @@ This framework makes use of the `CGI['PATH_INFO']` variable which is populated w
 
 Simply un-comment out the section and restart ColdFusion.
 
-To make non-`GET` requests to a RESTful API (i.e. for creating, updating or deleting resources), you'll need something other than your browser.  `cURL` is good enough for you command-line people, or if you're a Firefox fan try the [Poster](https://addons.mozilla.org/en-US/firefox/addon/2691) plugin.  (The ability to simulate `PUT` and `DELETE` requests via a `POST` is on the to-do list.)
+To make non-`GET` requests to a RESTful API (i.e. for creating, updating or deleting resources), you'll need something other than your browser.  `cURL` is good enough for you command-line people, or if you're a Firefox fan try the [Poster](https://addons.mozilla.org/en-US/firefox/addon/2691) plugin.
 
 ## Installation
 

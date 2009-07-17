@@ -28,8 +28,25 @@
 	</cflock>
 </cfif>
 
+<!--- work out the request method (PUT and DELETE can be simulated via a POST using a _method=X parameter) --->
+<cfset variables.request_method = cgi.request_method>
+<cfif variables.request_method EQ "POST">
+	<cfif structkeyexists(url, "_method") AND listfind("PUT,DELETE", url['_method'])>
+		<cfset variables.request_method = ucase(url['_method'])>
+		<cfset structdelete(url, "_method")>
+	</cfif>
+	<cfif structkeyexists(form, "_method") AND listfind("PUT,DELETE", form['_method'])>
+		<cfset variables.request_method = ucase(form['_method'])>
+		<cfset structdelete(form, "_method")>
+		<cfif structkeyexists(form, "fieldnames") AND listfindnocase(form.fieldnames, "_method")>
+			<cfset form.fieldnames = listdeleteat(form.fieldnames, listfindnocase(form.fieldnames, "_method"))>
+		</cfif>
+	</cfif>
+</cfif>
+
 <!--- dispatch the request --->
-<cfset variables.response = application['_restfulcf'][attributes.name].dispatch(cgi.request_method, cgi.path_info)>
+<cfset variables.response = application['_restfulcf'][attributes.name].dispatch(variables.request_method, cgi.path_info)>
+
 <!--- set the location header if there's anything to set (e.g. after a create) --->
 <cfif len(variables.response.getResponseURI())><cfheader name="Location" value="#variables.response.getResponseURI()#"></cfif>
 <!--- serve up binary content straight from a file if there's a filename --->
