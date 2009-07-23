@@ -8,19 +8,24 @@
 
 <cfcomponent extends="mxunit.framework.TestCase">
 
+	<!--- case-sensitive asserts are currently only available in SVN for MXUnit (not standard release) --->
+	<cfif NOT (structkeyexists(variables, "assertEqualsCase") AND iscustomfunction(variables.assertEqualsCase))>
+		<cfset variables.assertEqualsCase = variables.assertEquals>
+	</cfif>
+
 	<cffunction name="setup">
 		<cfset inflector = createObject("component", "restfulcf.framework.util.Inflector")>
 	</cffunction>
 
 	<!--- Capitalising --->
 	<cffunction name="capitalise_should_capitalise_first_letter">
-		<cfset assertTrue(compare("The big dog", inflector.capitalise("the big dog")) EQ 0)>
+		<cfset assertEqualsCase("The big dog", inflector.capitalise("the big dog"))>
 	</cffunction>
 	<cffunction name="capitalise_should_not_change_already_capitalised_first_letter">
-		<cfset assertTrue(compare("The big dog", inflector.capitalise("The big dog")) EQ 0)>
+		<cfset assertEqualsCase("The big dog", inflector.capitalise("The big dog"))>
 	</cffunction>
 	<cffunction name="capitalise_should_capitalise_single_character">
-		<cfset assertTrue(compare("X", inflector.capitalise("x")) EQ 0)>
+		<cfset assertEqualsCase("X", inflector.capitalise("x"))>
 	</cffunction>
 	<cffunction name="is_capital_should_be_true_for_all_capital_letters">
 		<cfset var i = 0>
@@ -43,56 +48,56 @@
 
 	<!--- CamelCasing --->
 	<cffunction name="camel_case_should_camel_case_spaced_string">
-		<cfset assertTrue(compare("TheBigDog", inflector.CamelCase("the big dog")) EQ 0)>
+		<cfset assertEqualsCase("TheBigDog", inflector.CamelCase("the big dog"))>
 	</cffunction>
 	<cffunction name="camel_case_should_camel_case_underscored_string">
-		<cfset assertTrue(compare("TheBigDog", inflector.CamelCase("the_big_dog")) EQ 0)>
+		<cfset assertEqualsCase("TheBigDog", inflector.CamelCase("the_big_dog"))>
 	</cffunction>
 	<cffunction name="camel_case_should_camel_case_string_with_non_alpha_chars">
-		<cfset assertTrue(compare("TheBigDog", inflector.CamelCase("the{}{big^!*dog")) EQ 0)>
+		<cfset assertEqualsCase("TheBigDog", inflector.CamelCase("the{}{big^!*dog"))>
 	</cffunction>
 	<cffunction name="camel_case_should_not_change_an_already_camel_cased_string">
-		<cfset assertTrue(compare("TheBigDog", inflector.CamelCase("TheBigDog")) EQ 0)>
+		<cfset assertEqualsCase("TheBigDog", inflector.CamelCase("TheBigDog"))>
 	</cffunction>
 
 	<!--- variablising --->
 	<cffunction name="variablise_should_variablise_camel_cased_string">
-		<cfset assertTrue(compare("the_big_dog", inflector.variablise("TheBigDog")) EQ 0)>
+		<cfset assertEqualsCase("the_big_dog", inflector.variablise("TheBigDog"))>
 	</cffunction>
 	<cffunction name="variablise_should_variablise_spaced_string">
-		<cfset assertTrue(compare("the_big_dog", inflector.variablise("The big dog")) EQ 0)>
+		<cfset assertEqualsCase("the_big_dog", inflector.variablise("The big dog"))>
 	</cffunction>
 	<cffunction name="variablise_should_variablise_string_with_numbers">
-		<cfset assertTrue(compare("area51_controller", inflector.variablise("area51Controller")) EQ 0)>
+		<cfset assertEqualsCase("area51_controller", inflector.variablise("area51Controller"))>
 	</cffunction>
 	<cffunction name="variablise_should_not_change_an_already_variablised_string">
-		<cfset assertTrue(compare("the_big_dog", inflector.variablise("the_big_dog")) EQ 0)>
+		<cfset assertEqualsCase("the_big_dog", inflector.variablise("the_big_dog"))>
 	</cffunction>
 	<cffunction name="variablise_should_variablise_string_with_non_alpha_chars">
-		<cfset assertTrue(compare("the_big_dog", inflector.variablise("^%*%^ The^%*%^ BigDog %^%*")) EQ 0)>
+		<cfset assertEqualsCase("the_big_dog", inflector.variablise("^%*%^ The^%*%^ BigDog %^%*"))>
 	</cffunction>
 	<cffunction name="variablise_should_variablise_string_with_multiple_upcased_chars">
-		<cfset assertTrue(compare("the_css_and_html_people", inflector.variablise("TheCSSAndHTMLPeople")) EQ 0)>
+		<cfset assertEqualsCase("the_css_and_html_people", inflector.variablise("TheCSSAndHTMLPeople"))>
 	</cffunction>
 
 	<!--- humanising --->
 	<cffunction name="humanise_should_humanise_camel_cased_string">
-		<cfset assertTrue(compare("The Big Dog", inflector.humanise("TheBigDog")) EQ 0)>
+		<cfset assertEqualsCase("The Big Dog", inflector.humanise("TheBigDog"))>
 	</cffunction>
 	<cffunction name="humanise_should_humanise_variablise_string">
-		<cfset assertTrue(compare("the big dog", inflector.humanise("the_big_dog")) EQ 0)>
+		<cfset assertEqualsCase("the big dog", inflector.humanise("the_big_dog"))>
 	</cffunction>
 	<cffunction name="humanise_should_not_change_already_humanised_string">
-		<cfset assertTrue(compare("the big dog", inflector.humanise("the big dog")) EQ 0)>
+		<cfset assertEqualsCase("the big dog", inflector.humanise("the big dog"))>
 	</cffunction>
 	<cffunction name="humanise_should_humanise_string_with_non_alpha_chars">
-		<cfset assertTrue(compare("The Big Dog", inflector.humanise("^%*%^ The^%*%^ BigDog %^%*")) EQ 0)>
+		<cfset assertEqualsCase("The Big Dog", inflector.humanise("^%*%^ The^%*%^ BigDog %^%*"))>
 	</cffunction>
 	<cffunction name="humanise_should_humanise_string_with_multiple_upcased_chars">
-		<cfset assertTrue(compare("The CSS And HTML People", inflector.humanise("TheCSSAndHTMLPeople")) EQ 0)>
+		<cfset assertEqualsCase("The CSS And HTML People", inflector.humanise("TheCSSAndHTMLPeople"))>
 	</cffunction>
 	<cffunction name="humanise_string_ending_with_id_should_remove_id">
-		<cfset assertTrue(compare("another test", inflector.humanise("another_test_id")) EQ 0)>
+		<cfset assertEqualsCase("another test", inflector.humanise("another_test_id"))>
 	</cffunction>
 
 	<!--- string padding --->
