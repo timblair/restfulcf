@@ -22,10 +22,11 @@
 
 <!--- intialise the RestfulCF instance engine if required --->
 <cfif NOT structKeyExists(application, "_restfulcf") OR attributes.reload>
-	<cfset variables.app = createobject("component", attributes.engine).init()>
+	<cfset variables.app = createobject("component", attributes.engine)>
 	<cflock scope="application" type="exclusive" timeout="25" throwontimeout="true">
 		<cfset application['_restfulcf'][attributes.name] = variables.app>
 	</cflock>
+	<cfset variables.app.init()>
 </cfif>
 
 <!--- work out the request method (PUT and DELETE can be simulated via a POST using a _method=X parameter) --->
