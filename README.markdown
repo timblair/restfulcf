@@ -361,6 +361,36 @@ This component is the internal representation of a request; it's generally not u
 
 This is simply a collection of all `Route`s available to the REST implementation; it uses the `findRoute` function to match the HTTP request method and URI to a single route.
 
+### Response Caching
+
+A simple response caching system is available within RESTfulCF which caches the response object for a given request (based on the request type and URI).  Multiple requests for the same (cached) data will bypass the controller and simply return the relevant `Response`.
+
+> Caching is only applicable to `GET` requests.  If the cache status of the response to a non-`GET` request will be ignored and will never be cached (or asked to be retrieved from the cache).
+
+As an example, to use the built-in `application`-scoped cache, add the following line to your `Dispatcher#init`:
+
+    <cfset setCache(createobject("component", "restfulcf.framework.core.cache.ApplicationCache").init())>
+
+Then, in the relevant `Controller` function, set that the response can be cached as follows:
+
+    <cfset arguments['_response'].setCacheStatus(TRUE)>
+
+The default cache time for this cache is 30 minutes; to change this you can pass a timestamp through to the `setCacheStatus()` function.  For example, to set the responses to a given action to cache for an hour you'd add the following to the controller function:
+
+    <cfset arguments['_response'].setCacheStatus(createtimestamp(0,1,0,0))>
+
+> The `ApplicationCache` is not recommended for production use: use it as an example of what you need to do to create your own concrete cache (using memcached or something similar), as described below.
+
+#### Custom Caches
+
+You may create you own cache type by creating a new component that extends `restfulcf.framework.core.cache.AbstractCache` and implementing the following functions:
+
+* `getKey`
+* `setKey`
+* `deleteKey`
+
+Look at the code for `restfulcf.framework.core.cache.ApplicationCache` for the arguments to these functions etc.
+
 ### HTTP Response Status Codes Used
 
 The HTTP response code will be one of the following:

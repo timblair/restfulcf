@@ -71,4 +71,36 @@
 		<cfset assertEquals("Error 2", err[2])>
 	</cffunction>
 
+	<!--- cache handling --->
+	<cffunction name="default_cache_status_should_be_false">
+		<cfset assertFalse(response.getCacheStatus())>
+	</cffunction>
+	<cffunction name="cache_status_should_be_true_after_setting_to_true">
+		<cfset response.setCacheStatus(TRUE)>
+		<cfset assertTrue(response.getCacheStatus())>
+	</cffunction>
+	<cffunction name="default_cache_expiry_should_be_zero">
+		<cfset assertEquals(0, response.getCacheExpiry())>
+	</cffunction>
+	<cffunction name="cache_expiry_should_be_correct_after_setting">
+		<cfset var timeout = createtimespan(1,2,3,4)>
+		<cfset response.setCacheExpiry(timeout)>
+		<cfset assertEquals(timeout, response.getCacheExpiry())>
+	</cffunction>
+	<cffunction name="default_cache_hit_status_should_be_false">
+		<cfset assertFalse(response.getCacheHit())>
+	</cffunction>
+	<cffunction name="cache_hit_status_should_be_true_after_setting_to_true">
+		<cfset response.setCacheHit(TRUE)>
+		<cfset assertTrue(response.getCacheHit())>
+	</cffunction>
+	<cffunction name="default_cache_key_should_be_empty">
+		<cfset assertEquals("", response.getCacheKey())>
+	</cffunction>
+	<cffunction name="cache_key_should_be_correct_after_setting">
+		<cfset var key = createuuid()>
+		<cfset response.setCacheKey(key)>
+		<cfset assertEquals(key, response.getCacheKey())>
+	</cffunction>
+
 </cfcomponent>

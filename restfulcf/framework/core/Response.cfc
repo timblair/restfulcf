@@ -16,7 +16,13 @@
 		response_file = "",
 		response_uri  = "",
 		errors        = [],
-		request       = createobject("component", "restfulcf.framework.core.Request")
+		request       = createobject("component", "restfulcf.framework.core.Request"),
+		cache         = {
+			active    = FALSE,
+			expiry    = 0,
+			hit       = FALSE,
+			key       = ""
+		}
 	}>
 
 	<cffunction name="init" access="public" returntype="restfulcf.framework.core.Response" output="no" hint="I am the encapsulation of a request response">
@@ -82,6 +88,35 @@
 	</cffunction>
 	<cffunction name="getErrorCollection" access="public" returntype="restfulcf.framework.core.ErrorCollection" output="no" hint="Returns the error list">
 		<cfreturn createobject("component", "restfulcf.framework.core.ErrorCollection").init(variables.instance.errors)>
+	</cffunction>
+
+	<cffunction name="getCacheStatus" access="public" returntype="boolean" output="no" hint="Gets if this response should be cached">
+		<cfreturn variables.instance.cache.active>
+	</cffunction>
+	<cffunction name="setCacheStatus" access="public" returntype="void" output="no" hint="Sets if this response should be cached">
+		<cfargument name="cache" type="boolean" required="yes" hint="Should we cache this response?">
+		<cfset variables.instance.cache.active = arguments.cache>
+	</cffunction>
+	<cffunction name="getCacheExpiry" access="public" returntype="boolean" output="no" hint="Gets how long this response should be cached for">
+		<cfreturn variables.instance.cache.expiry>
+	</cffunction>
+	<cffunction name="setCacheExpiry" access="public" returntype="void" output="no" hint="Sets how long this response should be cached for">
+		<cfargument name="timespan" type="numeric" required="yes" hint="The time in days to cache the data for (use `createtimespan`)">
+		<cfset variables.instance.cache.expiry = arguments.timespan>
+	</cffunction>
+	<cffunction name="getCacheHit" access="public" returntype="boolean" output="no" hint="Gets if this response was returned from the cache">
+		<cfreturn variables.instance.cache.hit>
+	</cffunction>
+	<cffunction name="setCacheHit" access="public" returntype="void" output="no" hint="Sets if this response was returned from the cache">
+		<cfargument name="hit" type="boolean" required="yes" hint="Was this a cached response?">
+		<cfset variables.instance.cache.hit = arguments.hit>
+	</cffunction>
+	<cffunction name="getCacheKey" access="public" returntype="string" output="no" hint="Returns the cache key used for this response">
+		<cfreturn variables.instance.cache.key>
+	</cffunction>
+	<cffunction name="setCacheKey" access="public" returntype="void" output="no" hint="Sets the cache key used for this response">
+		<cfargument name="key" type="string" required="yes" hint="The cache key">
+		<cfset variables.instance.cache.key = arguments.key>
 	</cffunction>
 
 	<cffunction name="getRequest" access="public" returntype="restfulcf.framework.core.Request" output="no" hint="Returns the request object that resulted in this response">

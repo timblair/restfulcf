@@ -48,6 +48,13 @@
 		<cfset var vo        = "">
 		<cfset var resp      = "">
 		<cfset var args      = duplicate(variables.instance.arguments)>
+		<cfset var cache_data = {}>
+
+		<!--- check for any previously cached results (GET requests only) --->
+		<cfif variables.instance.dispatcher.isCacheEnabled() AND variables.instance.route.getVerb() EQ "GET">
+			<cfset cache_data = variables.instance.dispatcher.getCache().get(this)>
+			<cfif cache_data.found><cfreturn cache_data.response></cfif>
+		</cfif>
 
 		<!--- add the request and response objects in whatever --->
 		<cfset args['_request'] = this>
@@ -87,6 +94,14 @@
 				<cfif isdefined("resp") AND len(resp)><cfset response.setResponseBody(resp)></cfif>
 			<cfelse>
 				<cfset response.setStatusCode(controller.HTTP_STATUS_CODES['unsupported_media_type'])>
+			</cfif>
+		</cfif>
+
+		<!--- cache the response if required (we only care about successful GETs) --->
+		<cfif variables.instance.dispatcher.isCacheEnabled()>
+			<cfif variables.instance.route.getVerb() EQ "GET" AND response.getCacheStatus()
+			  AND response.getStatusCode() EQ controller.HTTP_STATUS_CODES['ok']>
+				<cfset variables.instance.dispatcher.getCache().set(this, response)>
 			</cfif>
 		</cfif>
 

@@ -15,6 +15,9 @@
 	<cfset variables.controller_path = "">
 	<!--- default authenticator is empty --->
 	<cfset variables.authenticator = createobject("component", "restfulcf.framework.core.Authenticator")>
+	<!--- as is the default cache --->
+	<cfset variables.cache_enabled = FALSE>
+	<cfset variables.cache = createobject("component", "restfulcf.framework.core.cache.EmptyCache")>
 	<!--- the default response type, should nothing be specified --->
 	<cfset variables.response_type = "xml">
 	<!--- response type / MIME type mappings --->
@@ -162,6 +165,22 @@
 	<cffunction name="setAuthenticator" access="private" returntype="void" output="no" hint="Sets the authenticator component to use when auth'ing requests">
 		<cfargument name="authenticator" type="restfulcf.framework.core.Authenticator" required="yes" hint="The authenticator instance">
 		<cfset variables.authenticator = arguments.authenticator>
+	</cffunction>
+
+	<cffunction name="setCache" access="private" returntype="void" output="no" hint="Sets the cache component to use when caching responses.  Automatically sets cache_enabled flag to TRUE.">
+		<cfargument name="cache" type="restfulcf.framework.core.cache.AbstractCache" required="yes" hint="The cache isntance">
+		<cfset variables.cache = arguments.cache>
+		<cfset variables.cache_enabled = TRUE>
+	</cffunction>
+	<cffunction name="getCache" access="public" returntype="restfulcf.framework.core.cache.AbstractCache" output="no" hint="Gets the cache component to use when caching responses">
+		<cfreturn variables.cache>
+	</cffunction>
+	<cffunction name="setCacheEnabled" access="public" returntype="boolean" output="no" hint="Sets if response caching is enabled">
+		<cfargument name="enabled" type="boolean" required="no" default="TRUE" hint="Should the cache be enabled?">
+		<cfset variables.cache_enabled = NOT NOT arguments.enabled>
+	</cffunction>
+	<cffunction name="isCacheEnabled" access="public" returntype="boolean" output="no" hint="Is response caching enabled?">
+		<cfreturn variables.cache_enabled>
 	</cffunction>
 
 	<cffunction name="getController" access="public" returntype="restfulcf.framework.core.Controller" output="no" hint="Returns the controller instance for a given name">

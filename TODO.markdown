@@ -6,10 +6,6 @@ In no particular order...
 
 * Regex or similar support for route parameters, e.g. /resources/[0-9]+
 * Use of Accept: header for defining the response type, in addition to file extension
-* Caching layer
-    * Needs to be extracted from existing WLD implementation
-    * `Application`-scoped cache, plus example of a simple memcached cache
-    * Unit tests required
 * Error handling
     * Handling of CF errors
     * Needs to be extracted from existing WLD implementation and refined
