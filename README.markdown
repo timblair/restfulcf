@@ -25,11 +25,11 @@ For a more detailed discussion, see the [Wikipedia REST page](http://en.wikipedi
 
 ## Requirements
 
-* ColdFusion 8
+* ColdFusion 8/9
 * Wildcard mappings for Search Engine Safe (SES) URLs must be enabled
 * [MXUnit](http://mxunit.org/) is required for the unit tests
 
-See Known Issues for reasons why the current version doesn't work with CF9.
+See Known Issues for how to make sure your RESTfulCF application works correctly on CF9.
 
 This framework makes use of the `CGI['PATH_INFO']` variable which is populated when a URL such as `script.cfm/path_info` is requested; this behaviour is known as "search engine safe URLs" and is not enabled by default on ColdFusion, and the example URL given would normally result in a `404 Not Found` error.  To allow ColdFusion to handle these types of requests, edit your `web.xml` file and search for the following section:
 
@@ -405,10 +405,19 @@ The HTTP response code will be one of the following:
 
 ## Known Issues
 
-The current version of RESTfulCF _will not work on CF9_ due to incompatibilities with newer functionality included in CF9, including:
+### Running RESTfulCF on CF9
 
-* RESTfulCF sometimes explicitly defines a `local` "scope" manually within `<cffunction>`s; in CF9 this scope automatically exists, and any attempt to redefine it are ignored, including any variables contained (e.g. `<cfset var local = { foo = "bar" }>` will be ignored) -- [bug report](http://bit.ly/cg2DC);
-* RESTfulCF uses `onMissingMethod` to get/set properties for instances of `restfulcf.framework.Resource`; CF9 creates implicit setters/getters for `<cfproperty>` tags which bypass the RESTfulCF sanity checking.
+Using RESTfulCF on CF9 requires extra syntax, due to the implicit creation of setter/getter functions in components based on `<cfproperty>` tags.  RESTfulCF uses `onMissingMethod` to provide its own implicit setter/getter functions (again, based on `<cfproperty>` tags as described above), but by default this functionality is overridden by the new CF9 functionality and bypasses both the parameter sanity checking and property defaults that RESTfulCF provides.
+
+If you're using CF9, you can make things work by setting the `getter` and `setter` attributes of _all_ `<cfproperty>` tags to `false`, e.g.:
+
+	<cfproperty name="id" type="numeric" default="0" setter="false" getter="false">
+
+This updated behaviour is backwards-incompatible with code from old versions of CF.  As such, CF9 should provide a more simple way of specifying that implicit setters and getters should not be provided for _all_ properties.  A bug report / enhancement request [has been logged](http://bit.ly/QeuD1) with the idea of setting a flag for the implicit creation of setters/getters at the `<cfcomponent>` definition level.
+
+> The unit tests and sample application provided have not been updated with the 'fix' above, and as such a number of the tests fail or error, and calls to `Worlds#index` fail.
+
+### Error Handling
 
 The current version has very little in the way of error handling: if something goes wrong, then you'll likely get a standard ColdFusion error page, which won't be take to kindly by any consumer of your REST interface that's expecting a nicely formatted XML packet back.  Work on this is nearing completion.
 

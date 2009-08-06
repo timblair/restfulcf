@@ -21,15 +21,16 @@
 	<cffunction name="split" access="public" returntype="array" output="no" hint="Splits a single array in two based on the number of elements required in the first.">
 		<cfargument name="arr" type="array" required="yes" hint="The array to split">
 		<cfargument name="cnt" type="numeric" required="yes" hint="The number of elements required in the first result array">
-		<cfset var local = { res = [[], []], i = 0 }>
-		<cfloop from="1" to="#arguments.cnt#" index="local.i">
+		<cfset var res = [[], []]>
+		<cfset var i = 0>
+		<cfloop from="1" to="#arguments.cnt#" index="i">
 			<cfif arraylen(arguments.arr)>
-				<cfset arrayappend(local.res[1], arguments.arr[1])>
+				<cfset arrayappend(res[1], arguments.arr[1])>
 				<cfset arraydeleteat(arguments.arr, 1)>
 			</cfif>
 		</cfloop>
-		<cfset local.res[2] = arguments.arr>
-		<cfreturn local.res>
+		<cfset res[2] = arguments.arr>
+		<cfreturn res>
 	</cffunction>
 
 	<cffunction name="merge" access="public" returntype="array" output="no" hint="Merges two arrays of structures together based on the value of a given key (lower value = earlier in the array).">
@@ -66,15 +67,17 @@
 	<cffunction name="mergeSort" access="public" returntype="array" output="no" hint="Performs a merge sort on an array of structures based on the value of a given key (lower value = earlier in the array).">
 		<cfargument name="arr" type="array" required="yes" hint="The array of structures to merge sort">
 		<cfargument name="key" type="string" required="yes" hint="The structure key to use for ordering">
-		<cfset var local = { left = [], right = [], split = [] }>
+		<cfset var lft = []>
+		<cfset var rgt = []>
+		<cfset var spl = []>
 		<!--- if we've less than two elements then there's nothing to sort --->
 		<cfif arraylen(arguments.arr) LTE 1><cfreturn arguments.arr></cfif>
 		<!--- split the array in two and recursively merge sort those bits --->
-		<cfset local.split = split(arguments.arr, ceiling(arraylen(arguments.arr)/2))>
-		<cfset local.left = mergeSort(local.split[1], arguments.key)>
-		<cfset local.right = mergeSort(local.split[2], arguments.key)>
+		<cfset spl = split(arguments.arr, ceiling(arraylen(arguments.arr)/2))>
+		<cfset lft = mergeSort(spl[1], arguments.key)>
+		<cfset rgt = mergeSort(spl[2], arguments.key)>
 		<!--- merge the two parts back together in order and return --->
-		<cfreturn merge(local.left, local.right, arguments.key)>
+		<cfreturn merge(lft, rgt, arguments.key)>
 	</cffunction>
 
 	<cffunction name="slice" access="public" returntype="array" output="no" hint="Slices an array (returns a sub-section of the array).  Kinda like the LIMIT clause of a SQL statement.">

@@ -13,7 +13,8 @@
 		<cfargument name="depth" type="numeric" required="no" default="999" hint="How deep in to the XML structure should we go?">
 		<cfargument name="include_attr" type="boolean" required="no" default="TRUE" hint="Should XML attributes also be included in the returned structure?">
 		<cfargument name="include_root" type="boolean" required="no" default="TRUE" hint="Should the root node be included?">
-		<cfset var local = { xml_str = {} }>
+		<cfset var local = {}>
+		<cfset local.xml_str = {}>
 		<cfset local.root = xmlparse(arguments.xml).xmlroot>
 		<cfif arraylen(local.root.xmlchildren) AND arguments.depth GTE 1>
 			<cfloop array="#local.root.xmlchildren#" index="local.child">

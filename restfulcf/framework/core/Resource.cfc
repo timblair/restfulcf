@@ -16,7 +16,8 @@
 	<cfset variables.instance = {}>
 
 	<cffunction name="init" access="public" returntype="restfulcf.framework.core.Resource" output="no" hint="I am a general initialiser for this resource">
-		<cfset var local = { meta = getmetadata(this) }>
+		<cfset var local = {}>
+		<cfset local.meta = getmetadata(this)>
 		<!--- load properties --->
 		<cfif structkeyexists(local.meta, "properties")>
 			<cfloop array="#local.meta.properties#" index="local.prop">
@@ -38,7 +39,7 @@
 				<!--- store the property and set the default value where appropriate --->
 				<cfset variables.properties[local.prop.name] = local.prop_data>
 				<cfif structkeyexists(local.prop, "default")>
-					<cfinvoke component="#this#" method="set#local.prop.name#" value="#local.prop.default#">
+					<cfset set(local.prop.name, local.prop.default)>
 				</cfif>
 			</cfloop>
 		</cfif>
@@ -50,7 +51,7 @@
 		<!--- initialise any provided instance vars --->
 		<cfloop collection="#arguments#" item="local.arg">
 			<cfif structkeyexists(variables.properties, local.arg)>
-				<cfinvoke component="#this#" method="set#local.arg#" value="#arguments[local.arg]#">
+				<cfset set(local.arg, arguments[local.arg])>
 			</cfif>
 		</cfloop>
 		<cfreturn this>

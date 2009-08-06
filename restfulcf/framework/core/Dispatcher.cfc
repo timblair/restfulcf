@@ -103,7 +103,8 @@
 		<cfargument name="create_default_routes" type="boolean" required="no" default="TRUE" hint="Should default routes be created for this resource">
 		<cfargument name="methods" type="string" required="no" hint="A list of methods to include when creating default routes">
 		<!--- normalise naming for the resource, and create the controller --->
-		<cfset var local = { resource_name = variables.inflector.variablise(variables.inflector.pluralise(arguments.resource)) }>
+		<cfset var local = {}>
+		<cfset local.resource_name = variables.inflector.variablise(variables.inflector.pluralise(arguments.resource))>
 		<!--- make sure we've not already got a resource with this name --->
 		<cfif structkeyexists(variables.controllers, local.resource_name)>
 			<cfthrow type="restfulcf.framework.Dispatcher.DuplicateResourceException" message="A resource already exists with the name #arguments.resource# (which was normalised to #local.resource_name#).">

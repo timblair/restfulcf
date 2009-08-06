@@ -13,12 +13,12 @@ In no particular order...
     * Error capturing examples
 * Remove dependancy on `CGI['PATH_INFO']` and SES enabling via `web.xml`
 * Support for deserialising JSON-encoded body content on `POST`/`PUT`
+* Route aliases, e.g. `/x/1/y/2 => /y/2?x=1`
 
 ## Bugs and Known Issues
 
 * Controllers don't know the location of the API to output `Location` headers on successful `POST`
-* CF9's (mis)use of the `local` scope ([bug report](http://bit.ly/cg2DC))
-* CF9's implicit creation of setters/getters based on <cfproperty> tags
+* CF9's implicit creation of setters/getters breaks things unless each `Resource` `<cfproperty>` definition includes `getter="false" setter="false"` ([bug report](http://bit.ly/QeuD1))
 
 ## Supporting Material
 
