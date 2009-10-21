@@ -137,6 +137,27 @@
 		<cfreturn serializejson(variables.instance)>
 	</cffunction>
 
+	<cffunction name="toCSV" access="public" returntype="string" output="no">
+		<cfargument name="include_header" type="boolean" required="no" default="TRUE" hint="Should the resource properties be included as the first line?">
+		<cfset var csv = []>
+		<cfset var val = "">
+		<cfset var key = "">
+		<cfset var hed = "">
+		<cfset var keys = structkeyarray(variables.instance)>
+		<cfset arraysort(keys, 'textnocase', 'asc')>
+		<cfloop array="#keys#" index="key">
+			<cfset val = variables.instance[key]>
+			<!--- handle nested resources by embedding simple strings (can't nest CSVs) --->
+			<cfif NOT issimplevalue(val)><cfset val = val.toString()></cfif>
+			<!--- escape commas and double-quotes --->
+			<cfset val = replace(val, '"', '""', 'ALL')>
+			<cfif findoneof('",', val)><cfset val = '"#val#"'></cfif>
+			<cfset arrayappend(csv, val)>
+		</cfloop>
+		<cfif arguments.include_header><cfset hed = arraytolist(keys) & chr(10)></cfif>
+		<cfreturn hed & arraytolist(csv)>
+	</cffunction>
+
 	<!--- generic getter and setter functions --->
 	<cffunction name="get" access="private" returntype="any" output="no" hint="I am a generic getter method, used internally and for auto-generated onMissingMethod() calls">
 		<cfargument name="key" type="string" required="yes" hint="The key to retrieve">

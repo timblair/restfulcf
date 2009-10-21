@@ -267,4 +267,23 @@
 		</cfloop>
 	</cffunction>
 
+	<cffunction name="default_transform_to_csv_should_return_correct_data_with_header">
+		<cfset var csv = resource.toCSV()>
+		<cfset assertEquals(2, listlen(csv, chr(10)), "Returned CSV should have two lines")>
+		<cfset assertEquals("boolean,created_at,date_and_time,date_only,decimal,decimal_id,email,float,id,integer,name,numeric,numeric_id,remote_id,string_id,time_only,updated_at", listgetat(csv, 1, chr(10)), "Header line is incorrect")>
+		<cfset assertEquals("1,{ts '1978-09-22 00:00:00'},{ts '1978-09-22 12:34:56'},{d '1978-09-22'},4.56,3.45,test@test.com,7.8,1,3,Default,0.2e3,3,2,x,{t '12:34:56'},{ts '1978-09-22 00:00:00'}", listgetat(csv, 2, chr(10)), "Data line is incorrect")>
+	</cffunction>
+	<cffunction name="transform_to_csv_should_not_include_header_if_told_not_to">
+		<cfset var csv = resource.toCSV(FALSE)>
+		<cfset assertEquals(1, listlen(csv, chr(10)), "Returned CSV should have one line")>
+		<cfset assertEquals("1,{ts '1978-09-22 00:00:00'},{ts '1978-09-22 12:34:56'},{d '1978-09-22'},4.56,3.45,test@test.com,7.8,1,3,Default,0.2e3,3,2,x,{t '12:34:56'},{ts '1978-09-22 00:00:00'}", csv, "Data line is incorrect")>
+	</cffunction>
+	<cffunction name="transform_to_csv_should_escape_commas_and_quotes">
+		<cfset var csv = "">
+		<cfset resource.setName('Billy "Bob" Brannigan')>
+		<cfset resource.setEmail("Fake email, with a comma")>
+		<cfset csv = resource.toCSV(FALSE)>
+		<cfset assertEquals("1,{ts '1978-09-22 00:00:00'},{ts '1978-09-22 12:34:56'},{d '1978-09-22'},4.56,3.45,""Fake email, with a comma"",7.8,1,3,""Billy """"Bob"""" Brannigan"",0.2e3,3,2,x,{t '12:34:56'},{ts '1978-09-22 00:00:00'}", csv, "Data line is incorrect")>
+	</cffunction>
+
 </cfcomponent>

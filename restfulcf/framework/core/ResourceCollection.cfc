@@ -91,4 +91,15 @@
 		<cfreturn "[" & arraytolist(json, ",#chr(10)#") & "]">
 	</cffunction>
 
+	<cffunction name="toCSV" access="public" returntype="string" output="no" hint="Returns this resource in CSV format">
+		<cfargument name="include_header" type="boolean" required="no" default="TRUE" hint="Should the resource properties be included as the first line?">
+		<cfset var csv = []>
+		<cfset var resource = "">
+		<cfloop array="#variables.instance.resources#" index="resource">
+			<cfset arrayappend(csv, resource.toCSV(arguments.include_header))>
+			<cfset arguments.include_header = FALSE>
+		</cfloop>
+		<cfreturn arraytolist(csv, chr(10))>
+	</cffunction>
+
 </cfcomponent>

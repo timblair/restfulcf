@@ -235,13 +235,14 @@ As you can see, the function names don't adhere to the standard camel-cased nami
 
 #### Resource Representations
 
-The conversion from `Resource` to a transferrable representation of that resource is via the functions named `to...()` built in to the base `Resource`.  The `...` part is replaced by the requested type; the built-ins are `xml`, `txt`, `json` and `html`.  Any `Resource` can override any of these functions to provide a custom response; a `pdf` type is allowed by the framework, but there is no default handler and the `toPDF()` function must be implemented on a per-`Resource` basis.
+The conversion from `Resource` to a transferrable representation of that resource is via the functions named `to...()` built in to the base `Resource`.  The `...` part is replaced by the requested type; the built-ins are `xml`, `txt`, `json`, `csv` and `html`.  Any `Resource` can override any of these functions to provide a custom response; a `pdf` type is allowed by the framework, but there is no default handler and the `toPDF()` function must be implemented on a per-`Resource` basis.
 
 The default responses for each representation type are:
 
 * `toTXT()` and `toJSON()` -- both return a JSON-encoded string
 * `toHTML()` -- returns a definition list (`<dl>...</dl>`)
 * `toXML()` -- returns an XML packet
+* `toCSV()` -- returns a CSV document, including a header line detailing the names and order of properties
 
 An example XML representation of the above sample `Resource` is:
 

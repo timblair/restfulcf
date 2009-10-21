@@ -114,4 +114,19 @@
 		<cfset assertEquals(0, len(empty.toHTML()))>
 	</cffunction>
 
+	<cffunction name="to_csv_should_return_a_line_for_each_resource_plus_one_header">
+		<cfset var csv = collection.toCSV()>
+		<cfset var resources = csv.split(chr(10))>
+		<cfset assertEquals(4, arraylen(resources))>
+	</cffunction>
+	<cffunction name="to_csv_should_return_a_line_for_each_resource_without_header">
+		<cfset var csv = collection.toCSV(FALSE)>
+		<cfset var resources = csv.split(chr(10))>
+		<cfset assertEquals(3, arraylen(resources))>
+	</cffunction>
+	<cffunction name="to_csv_on_empty_collection_should_return_an_empty_string">
+		<cfset var empty = createobject("component", "restfulcf.framework.core.ResourceCollection").init("resource_fixtures")>
+		<cfset assertEquals(0, len(empty.toCSV()))>
+	</cffunction>
+
 </cfcomponent>

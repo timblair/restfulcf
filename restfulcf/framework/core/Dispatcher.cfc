@@ -26,7 +26,8 @@
 		txt  = "text/plain",
 		html = "text/html",
 		json = "application/json",
-		pdf  = "application/pdf"
+		pdf  = "application/pdf",
+		csv  = "text/csv"
 	}>
 	<!--- do we want to translate hyphens to underscores in incoming arguments? --->
 	<cfset variables.argument_translation = FALSE>
