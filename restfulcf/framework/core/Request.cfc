@@ -116,6 +116,7 @@
 		<cfset var cond      = "">
 		<cfset var arg_keys  = "">
 		<cfset var arg       = "">
+		<cfset var arg_name  = "">
 		<!---
 			build the arguments to send to the appropriate function, including refs to the request
 			and response objects.  Argument precedence is:
