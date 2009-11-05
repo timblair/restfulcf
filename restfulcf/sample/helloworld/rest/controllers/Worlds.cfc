@@ -30,6 +30,8 @@
 			<!--- sort based on the given field (using the getter for the property) --->
 			<cfset collection.sort("get" & arguments.order)>
 		</cfif>
+		<!--- cache the response --->
+		<cfset arguments['_response'].setCacheStatus(TRUE)>
 		<!--- return the sorted collection --->
 		<cfreturn collection>
 	</cffunction>

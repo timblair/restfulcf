@@ -16,7 +16,8 @@
 		mime       = "",
 		arguments  = {},
 		fn_args    = {},
-		arg_trans  = FALSE
+		arg_trans  = FALSE,
+		options    = {}
 	}>
 
 	<cffunction name="init" access="public" returntype="restfulcf.framework.core.Request" output="no" hint="I initialise this instance">
@@ -38,7 +39,9 @@
 			<cfparam name="arg.type" default="any">
 			<cfset variables.instance.fn_args[arg.name] = arg.type>
 		</cfloop>
-		<cfset variables.instance.arguments = buildArgs()>
+		<cfset arg = buildArgs()>
+		<cfset variables.instance.arguments = arg.args>
+		<cfset variables.instance.options = arg.opts>
 		<cfreturn this>
 	</cffunction>
 
@@ -52,8 +55,13 @@
 
 		<!--- check for any previously cached results (GET requests only) --->
 		<cfif variables.instance.dispatcher.isCacheEnabled() AND variables.instance.route.getVerb() EQ "GET">
-			<cfset cache_data = variables.instance.dispatcher.getCache().get(this)>
-			<cfif cache_data.found><cfreturn cache_data.response></cfif>
+			<!--- if we've been passed a "__refresh" option in the args, freshen the cache --->
+			<cfif structkeyexists(variables.instance.options, "refresh")>
+				<cfset variables.instance.dispatcher.getCache().delete(this)>
+			<cfelse>
+				<cfset cache_data = variables.instance.dispatcher.getCache().get(this)>
+				<cfif cache_data.found><cfreturn cache_data.response></cfif>
+			</cfif>
 		</cfif>
 
 		<!--- add the request and response objects in whatever --->
@@ -117,6 +125,7 @@
 		<cfset var arg_keys  = "">
 		<cfset var arg       = "">
 		<cfset var arg_name  = "">
+		<cfset var opts      = {}>
 		<!---
 			build the arguments to send to the appropriate function, including refs to the request
 			and response objects.  Argument precedence is:
@@ -178,8 +187,8 @@
 		</cfloop>
 
 		<!--- do any parameter name translation --->
+		<cfset arg_keys = structkeylist(args)>
 		<cfif variables.instance.arg_trans>
-			<cfset arg_keys = structkeylist(args)>
 			<cfloop list="#arg_keys#" index="arg">
 				<cfif find("-", arg)>
 					<cfset args[replace(arg, "-", "_", "ALL")] = args[arg]>
@@ -188,7 +197,17 @@
 			</cfloop>
 		</cfif>
 
-		<cfreturn args>
+		<!--- separate any request options (non-argument params such as cache-busting, included fields etc) --->
+		<cfset arg_keys = structkeylist(args)>
+		<cfloop list="#arg_keys#" index="arg">
+			<cfif len(arg) GT 2 AND left(arg, 2) EQ "__">
+				<cfset opts[right(arg, len(arg)-2)] = args[arg]>
+				<cfset structdelete(args, arg)>
+			</cfif>
+		</cfloop>
+
+		<cfset arg_keys = { args = args, opts = opts }>
+		<cfreturn arg_keys>
 	</cffunction>
 
 	<!--- general getters to allow controllers to inspect where the request has come from --->
@@ -206,6 +225,9 @@
 	</cffunction>
 	<cffunction name="getArguments" access="public" returntype="struct" output="no" hint="The arguments for this request">
 		<cfreturn variables.instance.arguments>
+	</cffunction>
+	<cffunction name="getOptions" access="public" returntype="struct" output="no" hint="The options (non-argument params) for this request">
+		<cfreturn variables.instance.options>
 	</cffunction>
 
 </cfcomponent>

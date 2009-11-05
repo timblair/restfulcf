@@ -16,6 +16,8 @@
 	<cffunction name="init" access="public" returntype="restfulcf.sample.helloworld.rest.Dispatcher" output="no" hint="I initialise this instance of the dispatcher.">
 		<!--- run the parent class constructor to initialise the component --->
 		<cfset super.init(argumentcollection=arguments)>
+		<!--- use an application scope cache --->
+		<cfset setCache(createobject("component", "restfulcf.framework.core.cache.ApplicationCache").init())>
 		<!--- we're using the app scope for persistence for the sample app --->
 		<cfparam name="application.worlds" default="#arraynew(1)#">
 		<!--- add the 'world' resource: automatically creates routes based on the
