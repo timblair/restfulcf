@@ -49,23 +49,8 @@
 		<cfset var resource_path = arguments.uri>
 		<cfset var request       = "">
 		<cfset var response      = "">
-
-		<!--- authenticate first: no point in doing anything else until this is OK --->
 		<cfset var auth_creds = { user = "", pass = "" }>
 		<cfset var auth_string = getPageContext().getRequest().getHeader("Authorization")>
-		<cfif isdefined("auth_string")>
-			<cfset auth_string = tostring(tobinary(listlast(auth_string, " ")))>
-			<cfif listlen(auth_string, ":") EQ 2>
-				<cfset auth_creds.user = listfirst(auth_string, ":")>
-				<cfset auth_creds.pass = listlast(auth_string, ":")>
-			</cfif>
-		</cfif>
-		<cfif NOT variables.authenticator.isAuthenticated(argumentcollection=auth_creds)>
-			<cfset response = createobject("component", "restfulcf.framework.core.Response")>
-			<cfset response.setStatusCode("401")>
-			<cfheader name="WWW-Authenticate" value='Basic realm="#variables.authenticator.getRealm()#"'>
-			<cfreturn response>
-		</cfif>
 
 		<!--- grab the response format from the resource path --->
 		<cfif listlen(resource_path, ".") GT 1>
@@ -90,6 +75,23 @@
 				mime       = listfirst(cgi.content_type, ";"),
 				arg_trans  = variables.argument_translation
 			)>
+
+			<!--- authenticate now after request parsing has been done --->
+			<cfif isdefined("auth_string")>
+				<cfset auth_string = tostring(tobinary(listlast(auth_string, " ")))>
+				<cfif listlen(auth_string, ":") EQ 2>
+					<cfset auth_creds.user = listfirst(auth_string, ":")>
+					<cfset auth_creds.pass = listlast(auth_string, ":")>
+				</cfif>
+			</cfif>
+			<cfset auth_creds.request = request>
+			<cfif NOT variables.authenticator.isAuthenticated(argumentcollection=auth_creds)>
+				<cfset response = createobject("component", "restfulcf.framework.core.Response")>
+				<cfset response.setStatusCode("401")>
+				<cfheader name="WWW-Authenticate" value='Basic realm="#variables.authenticator.getRealm()#"'>
+				<cfreturn response>
+			</cfif>
+
 			<cfset response = request.run()>
 			<cfset response.setResponseType(variables.response_types[response_type])>
 		</cfif>

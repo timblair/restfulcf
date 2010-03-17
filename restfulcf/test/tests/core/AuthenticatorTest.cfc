@@ -19,7 +19,7 @@
 	<cffunction name="is_authenticated_should_always_return_true">
 		<cfset var i = 0>
 		<cfloop from="1" to="10" index="i">
-			<cfset assertTrue(authenticator.isAuthenticated(random_string(), random_string()))>
+			<cfset assertTrue(authenticator.isAuthenticated(random_string(), random_string(), createobject("component", "restfulcf.framework.core.Request")))>
 		</cfloop>
 	</cffunction>
 

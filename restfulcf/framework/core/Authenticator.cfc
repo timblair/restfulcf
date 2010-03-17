@@ -19,6 +19,7 @@
 	<cffunction name="isAuthenticated" access="public" returntype="boolean" output="no" hint="The actual authentication method; should be overridden, else returns TRUE for everything.">
 		<cfargument name="user" type="string" required="yes" hint="The username">
 		<cfargument name="pass" type="string" required="yes" hint="The password">
+		<cfargument name="request" type="restfulcf.framework.core.Request" required="yes" hint="The request object">
 		<cfreturn TRUE>
 	</cffunction>
 
