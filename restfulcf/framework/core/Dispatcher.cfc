@@ -25,7 +25,7 @@
 		xml  = "application/xml",
 		txt  = "text/plain",
 		html = "text/html",
-		json = "application/json",
+		json = "text/javascript",
 		pdf  = "application/pdf",
 		csv  = "text/csv"
 	}>

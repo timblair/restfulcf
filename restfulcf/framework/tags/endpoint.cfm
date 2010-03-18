@@ -60,14 +60,24 @@
 	</cfif>
 <!--- output main content if anything's been generated --->
 <cfelseif len(variables.response.getResponseBody())>
-	<!--- special handling of XML in case the response isn't actually XML at all... --->
-	<cfif variables.response.getResponseType() EQ "application/xml">
-		<cfif isxml(variables.response.getResponseBody())>
-			<cfset variables.response.setResponseBody('<?xml version="1.0" encoding="UTF-8"?>#chr(10)#' & variables.response.getResponseBody())>
-		<cfelse>
-			<cfset variables.response.setResponseType("text/html")>
-		</cfif>
-	</cfif>
+	<!--- final checks and mungings --->
+	<cfswitch expression="#variables.response.getResponseType()#">
+		<!--- handling of XML in case the response isn't actually XML at all... --->
+		<cfcase value="application/xml">
+			<cfif isxml(variables.response.getResponseBody())>
+				<cfset variables.response.setResponseBody('<?xml version="1.0" encoding="UTF-8"?>#chr(10)#' & variables.response.getResponseBody())>
+			<cfelse>
+				<cfset variables.response.setResponseType("text/html")>
+			</cfif>
+		</cfcase>
+		<!--- and handling to allow JSONP with a __callback request option --->
+		<cfcase value="text/javascript">
+			<cfset variables.request_options = variables.response.getRequest().getOptions()>
+			<cfif structkeyexists(variables.request_options, "callback")>
+				<cfset variables.response.setResponseBody(variables.request_options['callback'] & "(" & variables.response.getResponseBody() & ")")>
+			</cfif>
+		</cfcase>
+	</cfswitch>
 	<cfcontent reset="true" type="#variables.response.getResponseType()#; charset=utf-8"><cfoutput>#variables.response.getResponseBody()#</cfoutput>
 </cfif>
 <cfif len(variables.response.getStatusText())>
