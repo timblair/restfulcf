@@ -68,7 +68,7 @@
 			<cfset variables.response.setResponseType("text/html")>
 		</cfif>
 	</cfif>
-	<cfcontent reset="true" type="#variables.response.getResponseType()#"><cfoutput>#variables.response.getResponseBody()#</cfoutput>
+	<cfcontent reset="true" type="#variables.response.getResponseType()#; charset=utf-8"><cfoutput>#variables.response.getResponseBody()#</cfoutput>
 </cfif>
 <cfif len(variables.response.getStatusText())>
 	<cfheader statuscode="#variables.response.getStatusCode()#" statustext="#variables.response.getStatusText()#">
