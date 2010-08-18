@@ -18,7 +18,6 @@ In no particular order...
 ## Bugs and Known Issues
 
 * Controllers don't know the location of the API to output `Location` headers on successful `POST`
-* CF9's implicit creation of setters/getters breaks things unless each `Resource` `<cfproperty>` definition includes `getter="false" setter="false"` ([bug report](http://bit.ly/QeuD1))
 
 ## Supporting Material
 

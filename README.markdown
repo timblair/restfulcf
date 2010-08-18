@@ -29,8 +29,6 @@ For a more detailed discussion, see the [Wikipedia REST page](http://en.wikipedi
 * Wildcard mappings for Search Engine Safe (SES) URLs must be enabled
 * [MXUnit](http://mxunit.org/) is required for the unit tests
 
-See Known Issues for how to make sure your RESTfulCF application works correctly on CF9.
-
 This framework makes use of the `CGI['PATH_INFO']` variable which is populated when a URL such as `script.cfm/path_info` is requested; this behaviour is known as "search engine safe URLs" and is not enabled by default on ColdFusion, and the example URL given would normally result in a `404 Not Found` error.  To allow ColdFusion to handle these types of requests, edit your `web.xml` file and search for the following section:
 
     <!-- begin SES
@@ -405,18 +403,6 @@ The HTTP response code will be one of the following:
 * `500 Internal Server Error` -- something went wrong
 
 ## Known Issues
-
-### Running RESTfulCF on CF9
-
-Using RESTfulCF on CF9 requires extra syntax, due to the implicit creation of setter/getter functions in components based on `<cfproperty>` tags.  RESTfulCF uses `onMissingMethod` to provide its own implicit setter/getter functions (again, based on `<cfproperty>` tags as described above), but by default this functionality is overridden by the new CF9 functionality and bypasses both the parameter sanity checking and property defaults that RESTfulCF provides.
-
-If you're using CF9, you can make things work by setting the `getter` and `setter` attributes of _all_ `<cfproperty>` tags to `false`, e.g.:
-
-	<cfproperty name="id" type="numeric" default="0" setter="false" getter="false">
-
-This updated behaviour is backwards-incompatible with code from old versions of CF.  As such, CF9 should provide a more simple way of specifying that implicit setters and getters should not be provided for _all_ properties.  A bug report / enhancement request [has been logged](http://bit.ly/QeuD1) with the idea of setting a flag for the implicit creation of setters/getters at the `<cfcomponent>` definition level.
-
-> The unit tests and sample application provided have not been updated with the 'fix' above, and as such a number of the tests fail or error, and calls to `Worlds#index` fail.
 
 ### Error Handling
 
