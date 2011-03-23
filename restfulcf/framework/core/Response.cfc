@@ -84,7 +84,7 @@
 		<cfset arrayappend(variables.instance.errors, arguments.error)>
 	</cffunction>
 	<cffunction name="hasErrors" access="public" returntype="boolean" output="no" hint="Are there any errors associated with this response">
-		<cfreturn NOT NOT arraylen(variables.instance.errors)>
+		<cfreturn NOT(NOT(arraylen(variables.instance.errors)))>
 	</cffunction>
 	<cffunction name="getErrorCollection" access="public" returntype="restfulcf.framework.core.ErrorCollection" output="no" hint="Returns the error list">
 		<cfreturn createobject("component", "restfulcf.framework.core.ErrorCollection").init(variables.instance.errors)>
