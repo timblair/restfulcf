@@ -181,7 +181,7 @@
 	</cffunction>
 	<cffunction name="setCacheEnabled" access="public" returntype="boolean" output="no" hint="Sets if response caching is enabled">
 		<cfargument name="enabled" type="boolean" required="no" default="TRUE" hint="Should the cache be enabled?">
-		<cfset variables.cache_enabled = NOT NOT arguments.enabled>
+		<cfset variables.cache_enabled = NOT(NOT(arguments.enabled))>
 	</cffunction>
 	<cffunction name="isCacheEnabled" access="public" returntype="boolean" output="no" hint="Is response caching enabled?">
 		<cfreturn variables.cache_enabled>
