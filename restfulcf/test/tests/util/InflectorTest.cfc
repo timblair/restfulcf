@@ -120,6 +120,7 @@
 		stack        = "stacks",
 		wish         = "wishes",
 		fish         = "fish",
+		jeans        = "jeans",
 		category     = "categories",
 		query        = "queries",
 		ability      = "abilities",
@@ -184,7 +185,9 @@
 		horse        = "horses",
 		prize        = "prizes",
 		edge         = "edges",
-		database     = "databases"
+		database     = "databases",
+		stadium      = "stadia",
+		zombie       = "zombies"
 	}>
 	<cffunction name="pluralise_should_pluralise_simple_and_complex_words">
 		<cfset var word = "">
@@ -196,6 +199,18 @@
 		<cfset var word = "">
 		<cfloop collection="#singular_to_plural#" item="word">
 			<cfset assertEquals(word, inflector.singularise(singular_to_plural[word]))>
+		</cfloop>
+	</cffunction>
+	<cffunction name="pluralise_should_not_repluralise_already_plural_words">
+		<cfset var word = "">
+		<cfloop collection="#singular_to_plural#" item="word">
+			<cfset assertEquals(singular_to_plural[word], inflector.pluralise(singular_to_plural[word]))>
+		</cfloop>
+	</cffunction>
+	<cffunction name="singularise_should_not_resingularise_already_singular_words">
+		<cfset var word = "">
+		<cfloop collection="#singular_to_plural#" item="word">
+			<cfset assertEquals(word, inflector.singularise(word))>
 		</cfloop>
 	</cffunction>
 
