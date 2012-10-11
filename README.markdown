@@ -129,6 +129,14 @@ If you want to use custom (non-default) routes then you should still call `addRe
         )
     )>
 
+#### Callbacks
+
+The following callback functions are called per request if defined in your dispatcher:
+
+* `onRouteFound(restfulcf.framework.core.Route)` when route matching has been performed
+* `onRequestBuilt(restfulcf.framework.core.Request)` when the `Request` has been initialised, but before it's run
+* `onAuthenticated(string)` on successful user authentication (the argument passed is the user name)
+
 ### `Route`
 
 A `Route` is effectively a mapping of HTTP request method (`GET`, `POST` etc) and URI pattern to a given controller and function.  For example, a route may be defined that maps `GET /resources/:id` to `path.to.controllers.Resources#read`.  All routes are defined in the `Dispatcher#init` function and are stored within a `RouteCollection` within that `Dispatcher`.

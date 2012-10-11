@@ -60,6 +60,7 @@
 
 		<!--- find the route that matches the resource path and run the request --->
 		<cfset route = variables.routes.findRoute(arguments.method, resource_path)>
+		<cfset onRouteFound(route)>
 		<cfif route.getVerb() EQ "INVALID">
 			<cfset response = createobject("component", "restfulcf.framework.core.Response")>
 			<cfset response.setStatusCode("404")>
@@ -75,6 +76,7 @@
 				mime       = listfirst(cgi.content_type, ";"),
 				arg_trans  = variables.argument_translation
 			)>
+			<cfset onRequestBuilt(request)>
 
 			<!--- authenticate now after request parsing has been done --->
 			<cfif isdefined("auth_string")>
@@ -91,6 +93,7 @@
 				<cfheader name="WWW-Authenticate" value='Basic realm="#variables.authenticator.getRealm()#"'>
 				<cfreturn response>
 			</cfif>
+			<cfset onAuthenticated(auth_creds.user)>
 
 			<cfset response = request.run()>
 			<cfset response.setResponseType(variables.response_types[response_type])>
@@ -196,6 +199,18 @@
 	</cffunction>
 	<cffunction name="getRouteCollection" access="public" returntype="restfulcf.framework.core.RouteCollection" output="no" hint="Returns the routes collection">
 		<cfreturn variables.routes>
+	</cffunction>
+
+	<cffunction name="onRouteFound" access="private" returntype="void" output="no" hint="An optional callback made after route matching">
+		<cfargument name="route" type="restfulcf.framework.core.Route" required="yes" hint="The route fromound">
+	</cffunction>
+
+	<cffunction name="onRequestBuilt" access="private" returntype="void" output="no" hint="An optional callback made after request building">
+		<cfargument name="request" type="restfulcf.framework.core.Request" required="yes" hint="TRUEhe request object">
+	</cffunction>
+
+	<cffunction name="onAuthenticated"name access="private" returntype="void" output="no" hint="An optional callback made on successful authentication">
+		<cfargument name="user" type="string" required="yes" hint="The user string">
 	</cffunction>
 
 </cfcomponent>
