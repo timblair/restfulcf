@@ -9,7 +9,6 @@
 <cfcomponent extends="mxunit.framework.TestCase">
 
 	<cffunction name="setup">
-		<cfapplication name="restfulcf_test_cache_applicationcache">
 		<cfset application['_restfulcf'] = {}>
 		<cfset cache = createobject("component", "restfulcf.framework.core.cache.ApplicationCache").init()>
 		<cfset cache_args = {
