@@ -31,13 +31,15 @@ For a more detailed discussion, see the [Wikipedia REST page](http://en.wikipedi
 
 This framework makes use of the `CGI['PATH_INFO']` variable which is populated when a URL such as `script.cfm/path_info` is requested; this behaviour is known as "search engine safe URLs" and is not enabled by default on ColdFusion, and the example URL given would normally result in a `404 Not Found` error.  To allow ColdFusion to handle these types of requests, edit your `web.xml` file and search for the following section:
 
-    <!-- begin SES
-    <servlet-mapping id="coldfusion_mapping_6">
-        <servlet-name>CfmServlet</servlet-name>
-        <url-pattern>*.cfml/*</url-pattern>
-    </servlet-mapping>
-    ...
-    end SES -->
+```xml
+<!-- begin SES
+<servlet-mapping id="coldfusion_mapping_6">
+    <servlet-name>CfmServlet</servlet-name>
+    <url-pattern>*.cfml/*</url-pattern>
+</servlet-mapping>
+...
+end SES -->
+```
 
 Simply un-comment out the section and restart ColdFusion.
 
@@ -59,13 +61,15 @@ The following is a breakdown of the main components you'll need to use to implem
 
 This is the "entrance point" to a RESTfulCF implementation.  It's a custom tag, and a simple implementation would be:
 
-    <cfapplication name="my_restful_app">
-    <cfimport taglib="/location/of/restfulcf/framework/tags/" prefix="restfulcf">
-    <restfulcf:endpoint
-        name     = application.applicationname,
-        engine   = "path.to.my.Dispatcher"
-        reload   = TRUE
-        response = "variables.response">
+```cfm
+<cfapplication name="my_restful_app">
+<cfimport taglib="/location/of/restfulcf/framework/tags/" prefix="restfulcf">
+<restfulcf:endpoint
+    name     = application.applicationname,
+    engine   = "path.to.my.Dispatcher"
+    reload   = TRUE
+    response = "variables.response">
+```
 
 RESTfulCF makes use of the `Application` scope, so this must be defined using `<cfapplication>` or `Application.cfc` before calling the `endpoint` custom tag.  The call to `endpoint` should be from a publicly-accessible script.  If you'd rather not play with compile-time imports of custom tag libraries, you can easily use `<cfmodule>` instead.
 
@@ -82,14 +86,16 @@ An implementation of RESTfulCF will contain a component which extends `Dispatche
 
 The simplest custom `Dispatcher` would be something like:
 
-    <cfcomponent extends="restfulcf.framework.core.Dispatcher" output="no">
-    	<cfset variables.controller_path = "path.to.my.controllers">
-    	<cffunction name="init" access="public" returntype="restfulcf.framework.core.Dispatcher" output="no">
-    		<cfset super.init(argumentcollection=arguments)>
-    		<cfset addResource("resource")>
-    		<cfreturn this>
-    	</cffunction>
-    </cfcomponent>
+```cfm
+<cfcomponent extends="restfulcf.framework.core.Dispatcher" output="no">
+    <cfset variables.controller_path = "path.to.my.controllers">
+    <cffunction name="init" access="public" returntype="restfulcf.framework.core.Dispatcher" output="no">
+        <cfset super.init(argumentcollection=arguments)>
+        <cfset addResource("resource")>
+        <cfreturn this>
+    </cffunction>
+</cfcomponent>
+```
 
 Here we're simply defining the path to the location of the `Controller` components, and adding a resource called "resource".
 
@@ -97,7 +103,9 @@ Here we're simply defining the path to the location of the `Controller` componen
 
 This function is a helper for creating `Route`s mapping URIs to certain controllers and functions.  The simplest form is just:
 
-    <cfset addResource("resource")>
+```cfm
+<cfset addResource("resource")>
+```
 
 This will use a controller called `Resources.cfc` in the `controller_path` set in the `Dispatcher` (see above).  It will then look inside that controller and auto-map certain functions it finds to routes as follows:
 
@@ -119,15 +127,17 @@ This will use a controller called `Resources.cfc` in the `controller_path` set i
 
 If you want to use custom (non-default) routes then you should still call `addResource()` to define the controller to handle requests for that resource name.  You can then add individual routes as follows:
 
-    <cfset addResource(name = "resources", create_default_routes = FALSE)>
-    <cfset variables.routes.addRoute(
-        createobject("component", "restfulcf.framework.core.Route").init(
-            verb       = "GET",
-            uri        = "/resources/:id",
-            controller = "resources",
-            method     = "read"
-        )
-    )>
+```cfm
+<cfset addResource(name = "resources", create_default_routes = FALSE)>
+<cfset variables.routes.addRoute(
+    createobject("component", "restfulcf.framework.core.Route").init(
+        verb       = "GET",
+        uri        = "/resources/:id",
+        controller = "resources",
+        method     = "read"
+    )
+)>
+```
 
 ### `Route`
 
@@ -144,33 +154,43 @@ The initialisation arguments for a `Route` are:
 
 The URI for a `Route` can (and usually does) contain one or more parameter; these names of these are prefixed with a colon `:`.  For example, the following URI defines a parameter called `id`:
 
-    /resources/:id
+```
+/resources/:id
+```
 
 During `Route` matching, any parameters are replaced out with a simple regular expression (matching anything except a forward slash `/`), so the above URI would match against any of the following:
 
-    /resources/1
-    /resources/qwertyuiop
-    /resources/user+name
+```
+/resources/1
+/resources/qwertyuiop
+/resources/user+name
+```
 
 If a `Route` matches a requested URI, and it contains one or more parameters, the extracted parameters will be passed to the controller as named arguments (named as the parameters):
 
-    <cffunction name="read">
-        <cfargument name="id">
-        ...
-    </cffunction>
+```cfm
+<cffunction name="read">
+    <cfargument name="id">
+    ...
+</cffunction>
+```
 
 The idea of a "nested resource" can be provided by using multiple parameters:
 
-    /resources/:resource_id/foos/:foo_id/bars/:id
+```
+/resources/:resource_id/foos/:foo_id/bars/:id
+```
 
 Again, the appropriate parameters are passed as named arguments through to the controller:
 
-    <cffunction name="read">
-        <cfargument name="resource_id">
-        <cfargument name="foo_id">
-        <cfargument name="id_id">
-        ...
-    </cffunction>
+```cfm
+<cffunction name="read">
+    <cfargument name="resource_id">
+    <cfargument name="foo_id">
+    <cfargument name="id_id">
+    ...
+</cffunction>
+```
 
 ### `Controller`
 
@@ -178,18 +198,22 @@ A RESTfulCF application will contain one or more components which extend `Contro
 
 The base `Controller` component is almost completely empty: it contains a simple `init()` function, and the `HTTP_STATUS_CODES` lookup described below.  You can created any functions you choose here: they're hooked up to the actual REST interface via `Route`s as defined in the `Dispatcher` section above.  In general, a function will take in a number of arguments, and return a `Resource` of some variety:
 
-    <cffunction name="read" access="public" returntype="restfulcf.framework.Resource">
-        <cfargument name="id">
-        <cfreturn createobject("component", "path.to.my.resources.Resource").init(
-            id = arguments.id,
-        )>
-    </cffunction>
+```cfm
+<cffunction name="read" access="public" returntype="restfulcf.framework.Resource">
+    <cfargument name="id">
+    <cfreturn createobject("component", "path.to.my.resources.Resource").init(
+        id = arguments.id,
+    )>
+</cffunction>
+```
 
 #### `HTTP_STATUS_CODES`
 
 Each controller contains a lookup structure which maps human-readable HTTP status names to their appropriate status codes.  For instance, `ok` is mapped to `200`, `created` to `201`, `not_found` to `404` and so on.  These can be used for readability when setting the response status code from within a `Controller`:
 
-    <cfset arguments['_response'].setStatusCode(this.HTTP_STATUS_CODES['created'])>
+```cfm
+<cfset arguments['_response'].setStatusCode(this.HTTP_STATUS_CODES['created'])>
+```
 
 See details on the `Response` component below for more information.
 
@@ -197,12 +221,14 @@ See details on the `Response` component below for more information.
 
 At the simplest level, a component that extends `Resource` is the definition of an individual resource; the available fields within a `Resource` are defined by using `<cfproperty>` tags.  In general, most `Resource` files are as simple as this:
 
-    <cfcomponent extends="restfulcf.framework.core.Resource" output="no">
-    	<cfproperty name="id"          type="numeric"  default="0">
-    	<cfproperty name="name"        type="string"   default="">
-    	<cfproperty name="created_at"  type="date"     default="1900-01-01 00:00:00">
-    	<cfproperty name="updated_at"  type="date"     default="1900-01-01 00:00:00">
-    </cfcomponent>
+```cfm
+<cfcomponent extends="restfulcf.framework.core.Resource" output="no">
+    <cfproperty name="id"          type="numeric"  default="0">
+    <cfproperty name="name"        type="string"   default="">
+    <cfproperty name="created_at"  type="date"     default="1900-01-01 00:00:00">
+    <cfproperty name="updated_at"  type="date"     default="1900-01-01 00:00:00">
+</cfcomponent>
+```
 
 Each `<cfproperty>` tag must have a unique (within this `Resource`) `name` and a `tyoe`; the `default` is optional but _should_ be provided.  The options for a property's `type` are:
 
@@ -244,13 +270,15 @@ The default responses for each representation type are:
 
 An example XML representation of the above sample `Resource` is:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <resource>
-        <created_at type="datetime">{ts '1900-01-01 00:00:00'}</created_at>
-        <id type="integer">0</id>
-        <name></name>
-        <updated_at type="datetime">{ts '1900-01-01 00:00:00'}</updated_at>
-    </resource>
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<resource>
+    <created_at type="datetime">{ts '1900-01-01 00:00:00'}</created_at>
+    <id type="integer">0</id>
+    <name></name>
+    <updated_at type="datetime">{ts '1900-01-01 00:00:00'}</updated_at>
+</resource>
+```
 
 If you request a response type that a given resource doesn't support, the HTTP response code will be set to `415 Unsupported Media Type` (i.e. your request was understood, but the resource can't be formatted into the required type.)
 
@@ -258,37 +286,45 @@ If you request a response type that a given resource doesn't support, the HTTP r
 
 This component is the first of the "meta-resources" within RESTfulCF, which extends `Resource` and so is treated just like any other `Resource` instance returned from a controller.  A `ResourceCollection` is exactly that: a collection of `Resource`s.  This is generally what will be returned from the `index` method in a controller, so that an example request of `http://localhost/resources.xml`, where `Resources#index` returned a `ResourceCollection`, would result in a response similar to the following:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <resources type="array">
-        <resource>
-            ...
-        </resource
-        <resource>
-            ...
-        </resource
-    </resources>
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<resources type="array">
+    <resource>
+        ...
+    </resource>
+    <resource>
+        ...
+    </resource>
+</resources>
+```
 
 The controller would initialise and add to a `ResourceCollection` as follows:
 
-    <cfset collection = createobject("component", "restfulcf.framework.core.ResourceCollection").init(name)>
-    <cfloop array="#resources#" index="resource">
-        <cfset collection.add(resource)>
-    </cfloop>
-    <cfreturn collection>
+```cfm
+<cfset collection = createobject("component", "restfulcf.framework.core.ResourceCollection").init(name)>
+<cfloop array="#resources#" index="resource">
+    <cfset collection.add(resource)>
+</cfloop>
+<cfreturn collection>
+```
 
 #### `ResourceCount` (extends `Resource`)
 
 A `ResourceCount` is another "meta-resource", but in this case it simply returns a count.  A resource of this type should generally be returned when requesting a count of resources, rather than retrieving all the resources as a `ResourceCollection` just to perform a `count()`-type function on the collection.  An example request of `http://localhost/resources/count.xml`, where `Resources#count` returned a `ResourceCount`, would result in a response similar to the following:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <resources>
-        <count type="integer">12345</count>
-    </resources>
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <count type="integer">12345</count>
+</resources>
+```
 
 The controller would initialise a `ResourceCount` as follows:
 
-    <cfset count = createobject("component", "restfulcf.framework.core.ResourceCount").init(name, count)>
-    <cfreturn count>
+```cfm
+<cfset count = createobject("component", "restfulcf.framework.core.ResourceCount").init(name, count)>
+<cfreturn count>
+```
 
 ### `Response`
 
@@ -296,41 +332,45 @@ An instance of `Response` is is passed, by reference, to each `Controller` funct
 
 The `Response` object contains a number of simple setters/getters which are used throughout the framework, but you will find you'll need to set some from within your controllers.  For example, if we're trying to `read` a resource (e.g. `GET /resources/1`) but the given resource doesn't exist, the `setStatusCode()` function should be called to set the response status to `404 Not Found`:
 
-    <cffunction name="read">
-        <cfargument name="id">
-        <cfif NOT resourceExists(arguments.id)>
-            <cfset arguments['_response'].setStatusCode(this.HTTP_STATUS_CODES['not_found'])>
-            <cfreturn>
-        </cfif>
-        ...
-    </cffunction>
+```cfm
+<cffunction name="read">
+    <cfargument name="id">
+    <cfif NOT resourceExists(arguments.id)>
+        <cfset arguments['_response'].setStatusCode(this.HTTP_STATUS_CODES['not_found'])>
+        <cfreturn>
+    </cfif>
+    ...
+</cffunction>
+```
 
 The following is a quick example of a complete `create` function from a sample controller, which makes use of `setStatusCode()`, `addError()` (for validation errors: also see `ErrorCollection` below) and `setResponseURI()` (for setting the `Location` header of the HTTP response to the URI of the newly created resource) from the `Response` object:
 
-    <cffunction name="create">
-        <cfargument name="name">
-        <cfset var resource = {}>
-        <!--- validate the name --->
-        <cfif NOT len(arguments.name)>
-            <!--- add an error if there's a problem --->
-            <cfset arguments['_response'].addError("Name must not be empty")>
-        </cfif>
-        <!--- if there are any errors, set a fail status and return --->
-        <cfif arguments['_response'].hasErrors()>
-            <cfset arguments['_response'].setStatusCode(this.HTTP_STATUS_CODES['unprocessable_entity'])>
-            <cfreturn>
-        </cfif>
-        <!--- still here, so create the new resource --->
-        <cfset resource.id = saveResource(arguments.name)>
-        <!--- set the proper response status and URI --->
-        <cfset arguments['_response'].setStatusCode(this.HTTP_STATUS_CODES['created'])>
-        <cfset arguments['_response'].setResponseURI("/resources/" & resource.id)>
-        <!--- and return the resource-ified resource --->
-        <cfreturn createobject("component", "path.to.my.resources.Resource").init(
-            id   = resource.id,
-            name = arguments.name
-        )>
-    </cffunction>
+```cfm
+<cffunction name="create">
+    <cfargument name="name">
+    <cfset var resource = {}>
+    <!--- validate the name --->
+    <cfif NOT len(arguments.name)>
+        <!--- add an error if there's a problem --->
+        <cfset arguments['_response'].addError("Name must not be empty")>
+    </cfif>
+    <!--- if there are any errors, set a fail status and return --->
+    <cfif arguments['_response'].hasErrors()>
+        <cfset arguments['_response'].setStatusCode(this.HTTP_STATUS_CODES['unprocessable_entity'])>
+        <cfreturn>
+    </cfif>
+    <!--- still here, so create the new resource --->
+    <cfset resource.id = saveResource(arguments.name)>
+    <!--- set the proper response status and URI --->
+    <cfset arguments['_response'].setStatusCode(this.HTTP_STATUS_CODES['created'])>
+    <cfset arguments['_response'].setResponseURI("/resources/" & resource.id)>
+    <!--- and return the resource-ified resource --->
+    <cfreturn createobject("component", "path.to.my.resources.Resource").init(
+        id   = resource.id,
+        name = arguments.name
+    )>
+</cffunction>
+```
 
 Another function that you may use from within a controller is `setResponseFile()`; If this is set with a local file path (and the file exists) then that file will be sent as the HTTP response.  This is useful for serving up pre-existing static files through the REST interface.
 
@@ -344,7 +384,9 @@ These components are used within the internals of the framework, but you'll rare
 
 This component is a template for locking your REST implementation down using [basic authentication](http://en.wikipedia.org/wiki/Basic_access_authentication).  If you wish to use this, create a new component extending this one, override the `init()` and `isAuthenticated()` functions, and add a line similar to the following to the `init()` function of your app's `Dispatcher` component:
 
-    <cfset setAuthenticator(createobject("component", "path.to.my.Authenticator").init(...))>
+```cfm
+<cfset setAuthenticator(createobject("component", "path.to.my.Authenticator").init(...))>
+```
 
 This authentication will be used for _every_ request; you cannot simply only protect some resources.
 
@@ -368,15 +410,21 @@ A simple response caching system is available within RESTfulCF which caches the 
 
 As an example, to use the built-in `application`-scoped cache, add the following line to your `Dispatcher#init`:
 
-    <cfset setCache(createobject("component", "restfulcf.framework.core.cache.ApplicationCache").init())>
+```cfm
+<cfset setCache(createobject("component", "restfulcf.framework.core.cache.ApplicationCache").init())>
+```
 
 Then, in the relevant `Controller` function, set that the response can be cached as follows:
 
-    <cfset arguments['_response'].setCacheStatus(TRUE)>
+```cfm
+<cfset arguments['_response'].setCacheStatus(TRUE)>
+```
 
 The default cache time for this cache is 30 minutes; to change this you can pass a timestamp through to the `setCacheStatus()` function.  For example, to set the responses to a given action to cache for an hour you'd add the following to the controller function:
 
-    <cfset arguments['_response'].setCacheStatus(createtimestamp(0,1,0,0))>
+```cfm
+<cfset arguments['_response'].setCacheStatus(createtimestamp(0,1,0,0))>
+```
 
 > The `ApplicationCache` is not recommended for production use: use it as an example of what you need to do to create your own concrete cache (using memcached or something similar), as described below.
 
